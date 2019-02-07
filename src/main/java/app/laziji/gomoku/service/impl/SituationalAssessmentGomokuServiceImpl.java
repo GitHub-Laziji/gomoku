@@ -163,12 +163,13 @@ public class SituationalAssessmentGomokuServiceImpl implements GomokuService {
     private String parseShape(List<Piece.Color> pieceColors, Piece.Color color) {
         StringBuilder shape = new StringBuilder();
         for (Piece.Color pieceColor : pieceColors) {
-            if (pieceColor == color)
+            if (pieceColor == color) {
                 shape.append("o");
-            else if (pieceColor == null)
+            } else if (pieceColor == null) {
                 shape.append("_");
-            else
+            } else {
                 shape.append("x");
+            }
         }
         return shape.toString();
     }
