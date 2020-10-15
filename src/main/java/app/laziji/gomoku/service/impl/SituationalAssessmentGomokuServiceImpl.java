@@ -8,8 +8,6 @@ import java.util.*;
 
 public class SituationalAssessmentGomokuServiceImpl implements GomokuService {
 
-    private static final int DEPTH = 3;
-
     private static final int PL5 = 1300,
             PL4 = 1200,
             PD44 = 1200,
@@ -62,6 +60,11 @@ public class SituationalAssessmentGomokuServiceImpl implements GomokuService {
     }
 
     private Random random = new Random();
+
+    @Override
+    public Piece prediction(ChessBoard chessBoard, int calcDepth) {
+        return null;
+    }
 
     @Override
     public Piece prediction(ChessBoard chessBoard) {
