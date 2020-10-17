@@ -66,6 +66,14 @@ public class SituationalAssessmentGomokuServiceImpl implements GomokuService {
         return null;
     }
 
+    private int[][] assess(ChessBoard chessBoard, int calcDepth) {
+        int[][] scoreGrid = new int[chessBoard.getWidth()][chessBoard.getWidth()];
+        if (calcDepth == 1) {
+            // TODO
+        }
+        return scoreGrid;
+    }
+
     @Override
     public Piece prediction(ChessBoard chessBoard) {
         int[][] mySituation = new int[chessBoard.getWidth()][chessBoard.getWidth()];
