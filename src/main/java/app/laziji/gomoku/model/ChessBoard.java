@@ -1,6 +1,7 @@
 package app.laziji.gomoku.model;
 
-public class ChessBoard {
+public class ChessBoard implements Comparable<String> {
+
 
     private Piece[][] pieces;
     private Piece.Color currentColor = Piece.BLACK;
@@ -20,6 +21,11 @@ public class ChessBoard {
         this.width = width;
         pieceMinX = pieceMinY = (width - 1) / 2;
         pieceMaxX = pieceMaxY = width / 2;
+    }
+
+    @Override
+    public int compareTo(String o) {
+        return 0;
     }
 
     public boolean put(Piece piece) {
