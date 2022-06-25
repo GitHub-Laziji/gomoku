@@ -35,8 +35,7 @@
             <div style="width:140px;padding: 30px;">
                 <button style="width:100%;font-size: 16px;" @click="onStart(1)">棋手先开始</button>
                 <button style="width:100%;font-size: 16px;margin-top: 15px;" @click="onStart(0)">电脑先开始</button>
-                <button style="width:100%;font-size: 16px;margin-top: 15px;" @click="onTest">测试</button>
-                <button style="width:100%;font-size: 16px;margin-top: 15px;" @click="print">打印</button>
+                <!-- <button style="width:100%;font-size: 16px;margin-top: 15px;" @click="onTest">测试</button> -->
             </div>
         </div>
     </div>
@@ -112,30 +111,6 @@ const create2DArr = (w, h, v) => {
     }
     return arr;
 }
-const changePutRound = (round, x, y, t) => {
-    for (let dy = -2; dy <= 2; dy++) {
-        for (let dx = -2; dx <= 2; dx++) {
-            let nowX = x + dx;
-            let nowY = y + dy;
-            if (nowX < 0 || nowX >= round[0].length || nowY < 0 || nowY >= round.length) {
-                continue;
-            }
-            round[nowY][nowX] += t;
-        }
-    }
-}
-const getPutRound = (points) => {
-    let round = create2DArr(points.length, points[0].length, 0);
-    round[7][7] = 1;
-    for (let y = 0; y < points.length; y++) {
-        for (let x = 0; x < points[0].length; x++) {
-            if (points[y][x] != -1) {
-                changePutRound(round, x, y, 1);
-            }
-        }
-    }
-    return round;
-}
 const randomInt = (n) => {
     return Math.floor(Math.random() * n);
 }
@@ -152,27 +127,21 @@ export default {
             start: false,
             win: -1,
             step: 0,
-            prePoint: { x: null, y: null }
         }
     },
     mounted() {
 
     },
     methods: {
-        onTest() {
-            this.points = [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, 0, -1, 1, -1, -1, -1, -1, -1], [-1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, 0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, 1, 0, 0, -1, 0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, 1, -1, 1, -1, -1, -1, 0, -1, -1, -1, -1, -1], [-1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
-            this.current = 1;
-            this.start = true;
-            setTimeout(() => {
-                this.calc();
-            }, 1000)
+        // onTest() {
+        //     this.points = [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 0, 1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 1, 0, -1, -1, 0, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 1, 1, 0, 1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, -1, -1], [-1, -1, -1, 1, -1, -1, 0, 1, 0, 1, 1, -1, -1, -1, -1], [-1, -1, -1, -1, 0, -1, 1, 1, 0, -1, 0, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 0, -1, 0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, 0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
+        //     this.current = 1;
+        //     this.start = true;
+        //     setTimeout(() => {
+        //         this.calc();
+        //     }, 1000)
 
-        },
-        print() {
-            let p = JSON.parse(JSON.stringify(this.points));
-            p[this.prePoint.y][this.prePoint.x] = -1;
-            console.log(JSON.stringify(p));
-        },
+        // },
         onStart(t) {
             this.current = 1;
             this.start = true;
@@ -190,15 +159,10 @@ export default {
             if (this.points[y][x] != -1) {
                 return;
             }
-            if (this.putPoint(x, y)) {
-                setTimeout(() => {
-                    this.calc();
-                },0)
-            }
+            this.putPoint(x, y) && this.calc();
         },
         putPoint(x, y) {
             this.points[y][x] = this.current;
-            this.prePoint = { x, y };
             this.current = 1 - this.current;
             this.step++;
             if (this.step == 15 * 15) {
@@ -229,61 +193,39 @@ export default {
         },
         calc() {
             let m = JSON.stringify(this.points);
-            let points = JSON.parse(m);
-            let { x, y } = this.test(points, this.current, 3, getPutRound(points));
-            // console.log(x, y)
+            let { x, y } = this.prediction(JSON.parse(m), this.current);
             this.putPoint(x, y);
         },
-        test(points, color, deepth, round) {
-            let o = { x: null, y: null, mys: Number.MIN_VALUE, type: 0 }
+        test(points, color, deepth) {
+            if (deepth == 1) {
+                return this.prediction(points, color);
+            }
+        },
+        prediction(points, color) {
+            let mySituation = create2DArr(15, 15, 0);
+            let opponentSituation = create2DArr(15, 15, 0);
+            let optionalMove = [];
+            let prevX = -1;
+            let prevY = -1;
             for (let y = 0; y < 15; y++) {
                 for (let x = 0; x < 15; x++) {
-                    if (points[y][x] != -1 || round[y][x] == 0) {
-                        continue;
-                    }
-                    let mys = this.assessPoint(x, y, color, points);
-                    points[y][x] = color;
-                    changePutRound(round, x, y, 1)
-                    let ops = deepth == 1 ? { x: null, y: null, mys: 0 } : this.test(points, 1 - color, deepth - 1, round);
-                    changePutRound(round, x, y, - 1)
-                    points[y][x] = -1;
-                    let nextMys = -ops.mys;
-                    let nextOps = ops.mys;
-                    let s = [mys, nextMys, nextOps]
-                    let max = Math.max(...s);
-                    let type;
-                    for (type = 0; type < s.length; type++) {
-                        if (s[type] == max) {
-                            break;
-                        }
-                    }
-                    let ny, nx;
-                    if (type == 2) {
-                        nx = ops.x;
-                        ny = ops.y;
-                    } else {
-                        nx = x;
-                        ny = y;
-                    }
-                    if (max > o.mys
-                        || max == o.mys && type < o.type
-                        || max == o.mys && type == o.type && (
-                            (nx - 7) * (nx - 7) + (ny - 7) * (ny - 7) < (o.x - 7) * (o.x - 7) + (o.y - 7) * (o.y - 7)
-                        )) {
-                        o.mys = max;
-                        o.type = type;
-                        o.x = nx;
-                        o.y = ny;
+                    mySituation[y][x] = this.assessPoint(x, y, color, points);
+                    opponentSituation[y][x] = this.assessPoint(x, y, 1 - color, points);
+                    let cmp = this.comparativeScore(prevX, prevY, x, y, mySituation, opponentSituation, 15)
+                    switch (cmp) {
+                        case 0:
+                            optionalMove.push({ x, y, v: mySituation[y][x] });
+                            continue;
+                        case 1:
+                            prevX = x;
+                            prevY = y;
+                            optionalMove = [];
+                            optionalMove.push({ x, y, v: mySituation[y][x] });
+                        default:
                     }
                 }
             }
-            if (o.type == 2) {
-                o.mys = -o.mys;
-            }
-            // if (deepth == 2) {
-            //     console.log(o)
-            // }
-            return o;
+            return optionalMove[0];
         },
         assessPoint(x, y, color, points) {
             if (points[y][x] != -1) {
@@ -317,11 +259,7 @@ export default {
                         break;
                     }
                 }
-                if (x == 4 && y == 10) {
-                    console.log(lineShape)
-                }
             }
-
             switch (bastGrade) {
                 case 0:
                     return PL5;
@@ -353,6 +291,46 @@ export default {
                 default:
                     return 1;
             }
+        },
+        comparativeScore(prevX, prevY, x, y, mys, ops) {
+            if (mys[y][x] == 0)
+                return -1;
+            if (prevX == -1)
+                return 1;
+            let myPrevScore = mys[prevY][prevX];
+            let myNowScore = mys[y][x];
+            let opPrevScore = ops[prevY][prevX];
+            let opNowScore = ops[y][x];
+            if (myPrevScore >= opPrevScore
+                && (myNowScore > myPrevScore
+                    || opNowScore > myPrevScore
+                    || myNowScore == myPrevScore
+                    && opNowScore > opPrevScore)) {
+                return 1;
+            }
+
+            if (opPrevScore > myPrevScore
+                && (opNowScore > opPrevScore
+                    || myNowScore >= opPrevScore
+                    || opNowScore == opPrevScore
+                    && myNowScore > myPrevScore)) {
+                return 1;
+            }
+
+            let center = Math.floor(15 / 2);
+            let prevCenter = Math.max(Math.abs(prevX - center), Math.abs(prevY - center));
+            let nowCenter = Math.max(Math.abs(x - center), Math.abs(y - center));
+            if (opPrevScore == opNowScore
+                && myPrevScore == myNowScore
+                && nowCenter < prevCenter) {
+                return 1;
+            }
+            if (opPrevScore == opNowScore
+                && myPrevScore == myNowScore
+                && nowCenter == prevCenter) {
+                return 0;
+            }
+            return -1;
         }
     }
 }
