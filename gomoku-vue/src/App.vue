@@ -61,35 +61,22 @@ const PD2 = 100;
 const PDD = 1;
 
 const SHAPE = {
-    "ooooo": 0,
-    "_oooo_": 1,
-    "_oooo": 2,
-    "oooo_": 2,
-    "ooo_o": 2,
-    "o_ooo": 2,
-    "oo_oo": 2,
-    "_ooo__": 3,
-    "__ooo_": 3,
-    "_oo_o_": 3,
-    "_o_oo_": 3,
-    "ooo__": 4,
-    "__ooo": 4,
-    "oo_o_": 4,
-    "_oo_o": 4,
-    "oo__o": 4,
-    "o__oo": 4,
-    "o_o_o": 4,
-    "_ooo_": 4,
-    "__oo__": 5,
-    "_o_o_": 5,
-    "_o__o_": 5,
-    "oo___": 6,
-    "___oo": 6,
-    "o_o__": 6,
-    "__o_o": 6,
-    "o__o_": 6,
-    "_o__o": 6,
-    "o___o": 6,
+    "ooooo": 90000,
+    "_oooo_": 4320,
+    "_ooo__": 720,
+    "__ooo_": 720,
+    "_oo_o_": 720,
+    "_o_oo_": 720,
+    "oooo_": 720,
+    "_oooo": 720,
+    "oo_oo": 720,
+    "o_ooo": 720,
+    "ooo_o": 720,
+    "__oo__": 120,
+    "__o_o_": 120,
+    "_o_o__": 120,
+    "___o__": 20,
+    "__o___": 20
 }
 const print = (b) => {
     let r = "";
@@ -139,6 +126,47 @@ const getPutRound = (points) => {
 const randomInt = (n) => {
     return Math.floor(Math.random() * n);
 }
+const getMaxGrade = (grades) => {
+    let grade = Math.max(...grades);
+    let type;
+    for (type = 0; type < grades.length; type++) {
+        if (grades[type] == grade) {
+            break;
+        }
+    }
+    return { grade, type };
+}
+const cmp = (a, b) => {
+    if (b.maxGrade.grade != a.maxGrade.grade) {
+        return b.maxGrade.grade - a.maxGrade.grade
+    }
+    return a.maxGrade.type - b.maxGrade.type;
+}
+
+const getShapes = (x, y, color, points) => {
+    let dx = [0, 1, 1, 1,];
+    let dy = [1, 1, 0, - 1];
+    let shapes = [];
+    for (let i = 0; i < 4; i++) {
+        let line = [];
+        let nowX = x - 4 * dx[i];
+        let nowY = y - 4 * dy[i];
+        while (line.length < 9) {
+            if (line.length == 4) {
+                line.push(color);
+            } else if (nowX < 0 || nowX >= 15 || nowY < 0 || nowY >= 15) {
+                line.push(1 - color);
+            } else {
+                line.push(points[nowY][nowX]);
+            }
+            nowX += dx[i];
+            nowY += dy[i];
+        }
+        let lineShape = line.map(o => ({ [-1]: "_", [color]: "o", [1 - color]: "x" })[o]).join("");
+        shapes.push(lineShape);
+    }
+    return shapes;
+}
 export default {
     components: {
     },
@@ -160,7 +188,7 @@ export default {
     },
     methods: {
         onTest() {
-            this.points = [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, 0, -1, 1, -1, -1, -1, -1, -1], [-1, -1, -1, 0, 1, 1, 1, 1, 0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, 0, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, 1, 0, 0, -1, 0, -1, -1, -1, -1, -1, -1], [-1, -1, -1, 1, -1, 1, -1, -1, -1, 0, -1, -1, -1, -1, -1], [-1, -1, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
+            this.points = [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, 1, 0, 0, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, -1, 0, 1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 1, 0, 0, 0, 0, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 0, 0, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
             this.current = 1;
             this.start = true;
             setTimeout(() => {
@@ -193,7 +221,7 @@ export default {
             if (this.putPoint(x, y)) {
                 setTimeout(() => {
                     this.calc();
-                },0)
+                }, 0)
             }
         },
         putPoint(x, y) {
@@ -205,24 +233,14 @@ export default {
                 this.win = 2;
                 return false;
             }
-            let dx = [0, 1, 1, 1, 0, -1, -1, -1];
-            let dy = [1, 1, 0, - 1, -1, -1, 0, 1];
-            let color = this.points[y][x];
-            for (let i = 0; i < 8; i++) {
-                let f = true;
-                for (let c = 1; c < 5; c++) {
-                    let nowX = x - c * dx[i];
-                    let nowY = y - c * dy[i];
-                    if (nowX < 0 || nowX >= 15 || nowY < 0 || nowY >= 15 || this.points[nowY][nowX] != color) {
-                        f = false;
-                        break;
+            for (let lineShape of getShapes(x, y, this.points[y][x], this.points)) {
+                for (let k in SHAPE) {
+                    if (lineShape.indexOf("ooooo") != -1) {
+                        this.win = this.points[y][x];
+                        this.start = false;
+                        console.log(JSON.stringify(this.points), x, y);
+                        return false;
                     }
-                }
-                if (f) {
-                    this.win = color;
-                    this.start = false;
-                    console.log(JSON.stringify(this.points), x, y);
-                    return false;
                 }
             }
             return true;
@@ -230,129 +248,64 @@ export default {
         calc() {
             let m = JSON.stringify(this.points);
             let points = JSON.parse(m);
-            let { x, y } = this.test(points, this.current, 3, getPutRound(points));
+            let { x, y } = this.test(points, this.current, 4, getPutRound(points));
             // console.log(x, y)
             this.putPoint(x, y);
         },
         test(points, color, deepth, round) {
-            let o = { x: null, y: null, mys: Number.MIN_VALUE, type: 0 }
+            let bsPs = [];
             for (let y = 0; y < 15; y++) {
                 for (let x = 0; x < 15; x++) {
                     if (points[y][x] != -1 || round[y][x] == 0) {
                         continue;
                     }
-                    let mys = this.assessPoint(x, y, color, points);
-                    points[y][x] = color;
-                    changePutRound(round, x, y, 1)
-                    let ops = deepth == 1 ? { x: null, y: null, mys: 0 } : this.test(points, 1 - color, deepth - 1, round);
-                    changePutRound(round, x, y, - 1)
-                    points[y][x] = -1;
-                    let nextMys = -ops.mys;
-                    let nextOps = ops.mys;
-                    let s = [mys, nextMys, nextOps]
-                    let max = Math.max(...s);
-                    let type;
-                    for (type = 0; type < s.length; type++) {
-                        if (s[type] == max) {
-                            break;
-                        }
-                    }
-                    let ny, nx;
-                    if (type == 2) {
-                        nx = ops.x;
-                        ny = ops.y;
-                    } else {
-                        nx = x;
-                        ny = y;
-                    }
-                    if (max > o.mys
-                        || max == o.mys && type < o.type
-                        || max == o.mys && type == o.type && (
-                            (nx - 7) * (nx - 7) + (ny - 7) * (ny - 7) < (o.x - 7) * (o.x - 7) + (o.y - 7) * (o.y - 7)
-                        )) {
-                        o.mys = max;
-                        o.type = type;
-                        o.x = nx;
-                        o.y = ny;
-                    }
+                    let grades = [];
+                    //????
+                    grades[0] = this.assessPoint(x, y, color, points);
+                    grades[1] = 0;
+                    grades[2] = this.assessPoint(x, y, 1 - color, points);
+                    bsPs.push({ x, y, grades, maxGrade: getMaxGrade(grades) })
                 }
             }
-            if (o.type == 2) {
-                o.mys = -o.mys;
+            bsPs.sort(cmp)
+            let newBsPs = []
+            for (let i = 0; i < 10 && i < bsPs.length; i++) {
+                let { x, y, grades } = bsPs[i];
+                points[y][x] = color;
+                changePutRound(round, x, y, 1)
+                grades[1] = deepth == 1 ? 0 : this.test(points, 1 - color, deepth - 1, round).grade;
+                changePutRound(round, x, y, - 1)
+                points[y][x] = -1;
+                newBsPs.push({ x, y, grades, maxGrade: getMaxGrade(grades) });
             }
-            // if (deepth == 2) {
-            //     console.log(o)
-            // }
+            newBsPs.sort(cmp)
+            if (deepth == 4) {
+                console.log(newBsPs)
+            }
+
+            let o = { x: newBsPs[0].x, y: newBsPs[0].y, grade: newBsPs[0].maxGrade.grade, type: newBsPs[0].maxGrade.type }
+            if (o.type == 2) {
+                o.grade = -o.grade;
+            }
             return o;
         },
         assessPoint(x, y, color, points) {
             if (points[y][x] != -1) {
                 return 0;
             }
-            let lineGrade = [0, 0, 0, 0, 0, 0, 0, 1];
-            let bastGrade = 7;
-
-            let dx = [0, 1, 1, 1,];
-            let dy = [1, 1, 0, - 1];
-            for (let i = 0; i < 4; i++) {
-                let line = [];
-                let nowX = x - 4 * dx[i];
-                let nowY = y - 4 * dy[i];
-                while (line.length < 9) {
-                    if (line.length == 4) {
-                        line.push(color);
-                    } else if (nowX < 0 || nowX >= 15 || nowY < 0 || nowY >= 15) {
-                        line.push(1 - color);
-                    } else {
-                        line.push(points[nowY][nowX]);
-                    }
-                    nowX += dx[i];
-                    nowY += dy[i];
-                }
-                let lineShape = line.map(o => ({ [-1]: "_", [color]: "o", [1 - color]: "x" })[o]).join("");
+            let grade = 0;
+            getShapes(x, y, color, points).forEach(lineShape => {
                 for (let k in SHAPE) {
                     if (lineShape.indexOf(k) != -1) {
-                        lineGrade[SHAPE[k]]++;
-                        bastGrade = Math.min(bastGrade, SHAPE[k]);
+                        grade += SHAPE[k];
                         break;
                     }
                 }
-                if (x == 4 && y == 10) {
-                    console.log(lineShape)
-                }
+            })
+            if (grade >= 90000) {
+                grade = 90000;
             }
-
-            switch (bastGrade) {
-                case 0:
-                    return PL5;
-                case 1:
-                    return PL4;
-                case 2:
-                    if (lineGrade[2] > 1 || lineGrade[3] >= 1)
-                        return PD44;
-                    else
-                        return PD4;
-                case 3:
-                    if (lineGrade[3] > 1)
-                        return PL33;
-                    else if (lineGrade[4] >= 1)
-                        return PD3L3;
-                    else
-                        return PL3;
-                case 4:
-                    return PD3;
-                case 5:
-                    if (lineGrade[5] > 1)
-                        return PL22;
-                    else
-                        return PL2;
-                case 6:
-                    return PD2;
-                case 7:
-                    return PDD;
-                default:
-                    return 1;
-            }
+            return grade;
         }
     }
 }
