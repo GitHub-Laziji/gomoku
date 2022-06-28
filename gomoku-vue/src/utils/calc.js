@@ -1,52 +1,51 @@
-const PL5 = 1300;
+const PL5 = 90000;
 const PL4 = 1200;
 const PD44 = 1200;
 const PD4L3 = 1200;
+const PD4H3 = 1150;
 const PL33 = 1100
 const PD3L3 = 1000
 const PD4 = 900;
-const PXD4 = 800;
 const PL3 = 700;
-const PX3 = 600;
+const PH3 = 600;
 const PL22 = 500;
 const PL2 = 400;
-const PX2 = 300;
 const PD3 = 200;
 const PD2 = 100;
-const PDD = 1;
+const PD1 = 1;
 
 const SHAPE = {
-    "ooooo": [90000, 9],
+    "ooooo": [90000, 11],
 
     //活4
-    "_oooo_": [5000, 8],
+    "_oooo_": [5000, 10],
 
     //眠4
-    "oooo_": [2000, 7],
-    "ooo_o": [2000, 7],
-    "oo_oo": [2000, 7],
-    "o_ooo": [2000, 7],
-    "_oooo": [2000, 7],
+    "oooo_": [2000, 9],
+    "ooo_o": [2000, 9],
+    "oo_oo": [2000, 9],
+    "o_ooo": [2000, 9],
+    "_oooo": [2000, 9],
 
     //活3
-    "__ooo__": [2000, 7],
+    "__ooo__": [2000, 8],
 
     //半活3  先手能成活4
-    "_ooo__": [1500, 6],
-    "_oo_o_": [1500, 6],
-    "_o_oo_": [1500, 6],
+    "_ooo__": [1500, 7],
+    "_oo_o_": [1500, 7],
+    "_o_oo_": [1500, 7],
 
     //眠3
-    "ooo__": [720, 5],
-    "oo_o_": [720, 5],
-    "oo__o": [720, 5],
-    "o_oo_": [720, 5],
-    "o_o_o": [720, 5],
-    "o__oo": [720, 5],
-    "_ooo_": [720, 5],
-    "_oo_o": [720, 5],
-    "_o_oo": [720, 5],
-    "__ooo": [720, 5],
+    "ooo__": [720, 6],
+    "oo_o_": [720, 6],
+    "oo__o": [720, 6],
+    "o_oo_": [720, 6],
+    "o_o_o": [720, 6],
+    "o__oo": [720, 6],
+    "_ooo_": [720, 6],
+    "_oo_o": [720, 6],
+    "_o_oo": [720, 6],
+    "__ooo": [720, 6],
 
     //活2
     "___oo___": [240, 5],
@@ -66,7 +65,11 @@ const SHAPE = {
     "__oo_": [120, 3],
     "__o_o": [120, 3],
     "___oo": [120, 3],
+
+    //活1
     "____o____": [20, 2],
+
+    //眠1
     "o____": [10, 1],
     "_o___": [10, 1],
     "__o__": [10, 1],
@@ -112,6 +115,7 @@ export const getGrade = (points, x, y, color) => {
     let dx = [0, 1, 1, 1,];
     let dy = [1, 1, 0, - 1];
     let grade = 0;
+    let shapes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     for (let t = 0; t < 4; t++) {
         let line = "";
         for (let i = -4; i <= 4; i++) {
@@ -128,11 +132,58 @@ export const getGrade = (points, x, y, color) => {
         for (let s in SHAPE) {
             if (line.indexOf(s) != -1) {
                 grade += SHAPE[s][0];
+                shapes[SHAPE[s][1]]++
                 break;
             }
         }
     }
-    return grade;
+    console.log(shapes)
+    if (shapes[11] > 0) {
+        return PL5;
+    }
+    if (shapes[10] > 0) {
+        return PL4;
+    }
+    if (shapes[9] > 1) {
+        return PD44;
+    }
+    if (shapes[9] > 1) {
+        return PD44;
+    }
+    if (shapes[9] > 0 && shapes[8] > 0) {
+        return PD4L3;
+    }
+    if (shapes[9] > 0 && shapes[7] > 0) {
+        return PD4H3;
+    }
+    if (shapes[8] + shapes[7] > 0) {
+        return PL33;
+    }
+    if (shapes[8] + shapes[7] > 0 && shapes[6] > 0) {
+        return PD3L3;
+    }
+    if (shapes[9] > 0) {
+        return PD4;
+    }
+    if (shapes[8] > 0) {
+        return PL3;
+    }
+    if (shapes[7] > 0) {
+        return PH3;
+    }
+    if (shapes[4]+shapes[5] > 0) {
+        return PL22;
+    }
+    if (shapes[5] > 0) {
+        return PL2;
+    }
+    if (shapes[6] > 0) {
+        return PD3;
+    }
+    if (shapes[3] > 0) {
+        return PD2;
+    }
+    return PD1;
 }
 
 const assess = (points, color) => {
