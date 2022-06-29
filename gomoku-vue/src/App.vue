@@ -43,7 +43,7 @@
 </template>
 
 <script >
-import { calc, getGrade, create2DArr } from "./utils/calc"
+import { calc, getShapes, create2DArr } from "./utils/calc"
 export default {
     components: {
     },
@@ -110,18 +110,20 @@ export default {
                 this.win = 2;
                 return false;
             }
-            if (getGrade(this.points, x, y, this.points[y][x]) >= 90000) {
-                this.win = this.points[y][x];
-                this.start = false;
-                console.log(JSON.stringify(this.points), x, y);
-                return false;
+            for (let shape of getShapes(this.points, x, y)) {
+                if (shape.indexOf("ooooo") != -1) {
+                    this.win = this.points[y][x];
+                    this.start = false;
+                    console.log(JSON.stringify(this.points), x, y);
+                    return false;
+                }
             }
             return true;
         },
         calc() {
             let m = JSON.stringify(this.points);
             let points = JSON.parse(m);
-            let { x, y } = calc(points, this.current, 1);
+            let { x, y } = calc(points, this.current, 3);
             // console.log(x, y)
             this.putPoint(x, y);
         },
