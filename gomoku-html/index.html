@@ -19,10 +19,10 @@
                 </div>
             </div>
             <div style="width:140px;padding: 30px;">
-                <button style="width:100%;font-size: 16px;" onclick="onStart(1)">棋手先开始</button>
+                <!-- <button style="width:100%;font-size: 16px;" onclick="onStart(1)">棋手先开始</button> -->
                 <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="onStart(0)">电脑先开始</button>
-                <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugStart()">debugStart</button>
-                <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugSave()">保存</button>
+                <!-- <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugStart()">debugStart</button> -->
+                <!-- <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugSave()">保存</button> -->
             </div>
         </div>
     </div>
@@ -52,8 +52,16 @@
                     html += `<div class="point" color="-1" x="${x}" y="${y}" style="top:${y * unitW + unitW - pointW / 2}px;left:${x * unitW + unitW - pointW / 2}px;"></div>`
                 }
             }
+            html += `<div class="p-mk" style="display:none"></div>`
+
             document.querySelector(".checkerboard").innerHTML = html + document.querySelector(".checkerboard").innerHTML;
         })();
+
+        function calc() {
+            let { x, y, t } = chess.calc(current, 3)
+            console.log(t)
+            putPoint(x, y);
+        }
 
         function debugSave() {
             let p = chess.getPoints();
@@ -72,10 +80,10 @@
                 o.setAttribute("color", p[o.getAttribute("y")][o.getAttribute("x")])
             });
             document.querySelector(".checkerboard-win").setAttribute("style", "display:none");
+            document.querySelector(".p-mk").setAttribute("style", "display:none");
             // console.log(t)
             setTimeout(() => {
-                let { x, y } = chess.calc(current, 3)
-                putPoint(x, y);
+                calc()
             }, 0)
 
         }
@@ -85,6 +93,7 @@
                 return false;
             }
             document.querySelector(`.point[x='${x}'][y='${y}']`).setAttribute("color", current);
+            document.querySelector(".p-mk").setAttribute("style", `top:${(y + 1) * unitW - 2}px;left:${(x + 1) * unitW - 2}px`);
             // console.log(document.querySelector(`.point[x='${x}'][y='${y}']`))
             prePoint = { x, y };
             current = 1 - current;
@@ -111,11 +120,10 @@
             chess = new Chess(create2DArr(15, 15, -1), 1);
             document.querySelectorAll(".point").forEach(o => o.setAttribute("color", "-1"));
             document.querySelector(".checkerboard-win").setAttribute("style", "display:none");
+            document.querySelector(".p-mk").setAttribute("style", "display:none");
             // console.log(t)
             if (t == 0) {
-                // console.log(chess.calc(current, 3))
-                let { x, y } = chess.calc(current, 3)
-                putPoint(x, y);
+                calc()
             }
         }
         function onCbClick(e) {
@@ -127,8 +135,7 @@
             let y = Math.floor((e.layerY - unitW / 2) / unitW);
             if (putPoint(x, y)) {
                 setTimeout(() => {
-                    let { x, y } = chess.calc(current, 3)
-                    putPoint(x, y);
+                    calc()
                 }, 0)
             }
         }

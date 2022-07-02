@@ -120,7 +120,7 @@ const getShapes = (points, x, y, d) => {
     return shapes;
 }
 const getGrade = (points, x, y, d) => {
-    let grade = [0, 0, 0, 0];
+    let grade = [0, 0, 0, 0, 0];
     if (points[y][x] == -1) {
         return grade;
     }
@@ -132,6 +132,7 @@ const getGrade = (points, x, y, d) => {
         for (let s in SHAPE) {
             if (shapes[i].indexOf(s) != -1) {
                 grade[i] = SHAPE[s][0];
+                grade[4] += grade[i];
                 break;
             }
         }
@@ -183,7 +184,14 @@ class Chess {
         foreach(this.points, (x, y, v) => v != EMPTY && changeRound(this.passArea, x, y, 1));
 
         this.gradeArea = create2DArr(this.w, this.w, [0, 0, 0, 0, 0]);
-        foreach(this.points, (x, y, v) => v != EMPTY && (this.gradeArea[y][x] = [...getGrade(this.points, x, y), 0]));
+
+        foreach(this.points, (x, y, v) => {
+            if (v == EMPTY) {
+                return;
+            }
+            this.gradeArea[y][x] = getGrade(this.points, x, y);
+            this.gradeArea[y][x][4] = sum(this.gradeArea[y][x]);
+        });
 
     }
 
@@ -228,10 +236,6 @@ class Chess {
         }
         this.gradeArea[y][x] = getGrade(this.points, x, y);
         this.gradeArea[y][x][4] = sum(this.gradeArea[y][x]);
-        // if (debug) {
-        //     print("gradeArea", this.gradeArea, (o) => o[4])
-        //     console.log(sum(this.gradeArea[y][x]), this.gradeArea[y][x])
-        // }
         return true;
     }
 
@@ -275,9 +279,12 @@ class Chess {
                 }
                 this.putPoint(x, y, color);
                 let pg = getGrade(this.points, x, y);
+                if (depth == 3 && x == 6 && y == 5) {
+                    console.log(pg)
+                }
                 if (pg[4] >= SHAPE['ooooo']) {
                     this.removePoint(x, y);
-                    return { x, y, g: b2(19) };
+                    return { x, y, g: b2(19), t: "A" };
                 }
                 let g = depth == 1 ? this.assess(1 - color) : this.subCalc(1 - color, depth - 1, maxG == null ? null : -maxG).g;
                 this.removePoint(x, y);
@@ -287,10 +294,13 @@ class Chess {
                     p = { x, y };
                 }
                 if (preMin !== null && preMin !== undefined && maxG >= preMin) {
-                    return { x, y, g: maxG };
+                    return { x, y, g: maxG, t: "B" };
                 }
             }
         }
-        return { ...p, g: maxG };
+        // if (depth == 3) {
+        //     print("gradeArea", this.gradeArea, (o) => o[4])
+        // }
+        return { ...p, g: maxG, t: "C" };
     }
 }
