@@ -43,7 +43,7 @@
 </template>
 
 <script >
-import { Chess, getShapes, create2DArr } from "./utils/calc2"
+import { Chess, calc, getShapes, create2DArr } from "./utils/calc2"
 export default {
     components: {
     },
@@ -69,7 +69,7 @@ export default {
             this.points = [[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, 1, 0, 0, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, -1, 0, 1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 1, 0, 0, 0, 0, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, 0, 0, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, 1, -1, -1, 1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]]
             this.current = 1;
             this.start = true;
-            this.chess = new Chess(this.points, this.current);
+            this.chess = new Chess(this.points, this.current)
             setTimeout(() => {
                 this.calc();
             }, 1000)
@@ -84,7 +84,7 @@ export default {
             this.current = 1;
             this.start = true;
             this.points = create2DArr(15, 15, -1);
-            this.chess = new Chess(this.points, this.current);
+            this.chess = new Chess(this.points, this.current)
             if (t === 0) {
                 this.calc();
             }
@@ -106,8 +106,6 @@ export default {
         },
         putPoint(x, y) {
             this.points[y][x] = this.current;
-            this.chess.putPoint(x, y, this.current, true);
-
             this.prePoint = { x, y };
             this.current = 1 - this.current;
             this.step++;
@@ -126,7 +124,10 @@ export default {
             return true;
         },
         calc() {
-            let { x, y } = this.chess.calc(this.current, 3, this.points);
+            let m = JSON.stringify(this.points);
+            let points = JSON.parse(m);
+            let { x, y } = this.chess.calc(this.current, 3, points);
+            // console.log(x, y)
             this.putPoint(x, y);
         },
 
