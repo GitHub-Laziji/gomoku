@@ -58,9 +58,11 @@
         })();
 
         function calc() {
+            let ds = new Date();
             let { x, y, t } = chess.calc(current, 3)
-            console.log(t)
+            console.log(step, new Date().getTime() - ds.getTime())
             putPoint(x, y);
+
         }
 
         function debugSave() {
@@ -94,7 +96,6 @@
             }
             document.querySelector(`.point[x='${x}'][y='${y}']`).setAttribute("color", current);
             document.querySelector(".p-mk").setAttribute("style", `top:${(y + 1) * unitW - 2}px;left:${(x + 1) * unitW - 2}px`);
-            // console.log(document.querySelector(`.point[x='${x}'][y='${y}']`))
             prePoint = { x, y };
             current = 1 - current;
             step++;

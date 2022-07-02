@@ -6,9 +6,9 @@ const sum = (arr) => {
     arr.forEach(o => s += o);
     return s;
 }
-
+const INF = b2(19);
 const SHAPE = {
-    "ooooo": [b2(19), 11],
+    "ooooo": [INF, 11],
 
     //活4
     "_oooo_": [b2(14), 10],
@@ -81,8 +81,8 @@ const create2DArr = (w, h, v) => {
     return arr;
 }
 const changeRound = (round, x, y, t) => {
-    for (let dy = -2; dy <= 2; dy++) {
-        for (let dx = -2; dx <= 2; dx++) {
+    for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
             let nowX = x + dx;
             let nowY = y + dy;
             if (nowX < 0 || nowX >= round[0].length || nowY < 0 || nowY >= round.length) {
@@ -103,16 +103,27 @@ const getShapes = (points, x, y, d) => {
         if (d !== undefined && t != d) {
             continue;
         }
-        let line = "";
-        for (let i = -4; i <= 4; i++) {
+        let line = "o";
+        for (let i = 1; i <= 4; i++) {
             let xx = x + i * DXY[t][0];
             let yy = y + i * DXY[t][1];
             if (xx < 0 || xx >= points[0].length || yy < 0 || yy >= points.length || points[yy][xx] == 1 - color) {
-                line += "x"
+                break;
             } else if (points[yy][xx] == color) {
                 line += "o"
             } else {
                 line += "_"
+            }
+        }
+        for (let i = -1; i >= -4; i--) {
+            let xx = x + i * DXY[t][0];
+            let yy = y + i * DXY[t][1];
+            if (xx < 0 || xx >= points[0].length || yy < 0 || yy >= points.length || points[yy][xx] == 1 - color) {
+                break;
+            } else if (points[yy][xx] == color) {
+                line = "o" + line;
+            } else {
+                line = "_" + line;
             }
         }
         shapes[t] = line;
@@ -172,7 +183,6 @@ const EMPTY = -1;
 class Chess {
 
     constructor(points, current) {
-
         if (!points || !points.length || points.length != points[0].length) {
             throw new Error();
         }
@@ -183,14 +193,16 @@ class Chess {
         this.passArea[Math.floor(this.w / 2)][Math.floor(this.w / 2)] = 1;
         foreach(this.points, (x, y, v) => v != EMPTY && changeRound(this.passArea, x, y, 1));
 
+        this.fullGrade = [0, 0];
         this.gradeArea = create2DArr(this.w, this.w, [0, 0, 0, 0, 0]);
-
         foreach(this.points, (x, y, v) => {
             if (v == EMPTY) {
                 return;
             }
             this.gradeArea[y][x] = getGrade(this.points, x, y);
             this.gradeArea[y][x][4] = sum(this.gradeArea[y][x]);
+            this.fullGrade[BLACK] += (v == BLACK ? 1 : -1) * this.gradeArea[y][x][4];
+            this.fullGrade[WHITE] += (v == WHITE ? 1 : -1) * this.gradeArea[y][x][4];
         });
 
     }
@@ -211,12 +223,7 @@ class Chess {
         return false;
     }
 
-    putPoint(x, y, color, debug) {
-        if (this.points[y][x] != EMPTY) {
-            return false;
-        }
-        this.points[y][x] = color;
-        changeRound(this.passArea, x, y, 1);
+    updateMiGrade(x, y) {
         for (let t = 0; t < 4; t++) {
             for (let i = -4; i <= 4; i++) {
                 if (i == 0) {
@@ -226,44 +233,55 @@ class Chess {
                 let yy = y + i * DXY[t][1];
                 if (xx >= 0 && xx < this.w && yy >= 0 && yy < this.w) {
                     let grade = getGrade(this.points, xx, yy, t);
-                    this.gradeArea[yy][xx][4] += grade[t] - this.gradeArea[yy][xx][t];
+                    let dGrade = grade[t] - this.gradeArea[yy][xx][t];
+                    let v = this.points[yy][xx];
+                    this.fullGrade[BLACK] += (v == BLACK ? 1 : -1) * dGrade;
+                    this.fullGrade[WHITE] += (v == WHITE ? 1 : -1) * dGrade;
+                    this.gradeArea[yy][xx][4] += dGrade;
                     this.gradeArea[yy][xx][t] = grade[t];
-                    // if (debug) {
-                    //     console.log(x, y, color, xx, yy, t, grade, this.gradeArea[yy][xx])
-                    // }
                 }
             }
         }
+    }
+
+    putPoint(x, y, color, debug) {
+        if (this.points[y][x] != EMPTY) {
+            return false;
+        }
+        this.points[y][x] = color;
+        changeRound(this.passArea, x, y, 1);
+        this.updateMiGrade(x, y);
         this.gradeArea[y][x] = getGrade(this.points, x, y);
         this.gradeArea[y][x][4] = sum(this.gradeArea[y][x]);
+        this.fullGrade[BLACK] += (color == BLACK ? 1 : -1) * this.gradeArea[y][x][4];
+        this.fullGrade[WHITE] += (color == WHITE ? 1 : -1) * this.gradeArea[y][x][4];
         return true;
     }
 
+
     removePoint(x, y) {
+        let color = this.points[y][x];
         this.points[y][x] = EMPTY;
         changeRound(this.passArea, x, y, -1);
-        for (let t = 0; t < 4; t++) {
-            for (let i = -4; i <= 4; i++) {
-                if (i == 0) {
-                    continue;
-                }
-                let xx = x + i * DXY[t][0];
-                let yy = y + i * DXY[t][1];
-                if (xx >= 0 && xx < this.w && yy >= 0 && yy < this.w) {
-                    let ng = getGrade(this.points, xx, yy, t)[t];
-                    this.gradeArea[yy][xx][4] += ng - this.gradeArea[yy][xx][t];
-                    this.gradeArea[yy][xx][t] = ng;
-                }
-            }
-        }
+        this.updateMiGrade(x, y);
+        this.fullGrade[BLACK] += (color == BLACK ? -1 : 1) * this.gradeArea[y][x][4];
+        this.fullGrade[WHITE] += (color == WHITE ? -1 : 1) * this.gradeArea[y][x][4];
         this.gradeArea[y][x] = [0, 0, 0, 0, 0];
     }
 
-    assess(color) {
-        let grade = 0;
-        foreach(this.points, (x, y, v) => v != EMPTY && (grade += (v == color ? 1 : -1) * this.gradeArea[y][x][4]));
-        return grade;
-    }
+    // assess(color) {
+    //     let grade = 0;
+    //     for (let y = 0; y < this.w; y++) {
+    //         for (let x = 0; x < this.w; x++) {
+    //             let v = this.points[y][x];
+    //             if (v != EMPTY) {
+    //                 grade += (v == color ? 1 : -1) * this.gradeArea[y][x][4];
+    //             }
+    //         }
+    //     }
+    //     // foreach(this.points, (x, y, v) => v != EMPTY && (grade += (v == color ? 1 : -1) * this.gradeArea[y][x][4]));
+    //     return grade;
+    // }
 
     calc(color, depth) {
         return this.subCalc(color, depth, null);
@@ -279,14 +297,11 @@ class Chess {
                 }
                 this.putPoint(x, y, color);
                 let pg = getGrade(this.points, x, y);
-                if (depth == 3 && x == 6 && y == 5) {
-                    console.log(pg)
-                }
-                if (pg[4] >= SHAPE['ooooo']) {
+                if (pg[4] >= INF) {
                     this.removePoint(x, y);
-                    return { x, y, g: b2(19), t: "A" };
+                    return { x, y, g: INF };
                 }
-                let g = depth == 1 ? this.assess(1 - color) : this.subCalc(1 - color, depth - 1, maxG == null ? null : -maxG).g;
+                let g = depth == 1 ? this.fullGrade[1 - color] : this.subCalc(1 - color, depth - 1, maxG == null ? null : -maxG).g;
                 this.removePoint(x, y);
                 g = -g;
                 if (maxG == null || g > maxG) {
@@ -294,13 +309,10 @@ class Chess {
                     p = { x, y };
                 }
                 if (preMin !== null && preMin !== undefined && maxG >= preMin) {
-                    return { x, y, g: maxG, t: "B" };
+                    return { x, y, g: INF };
                 }
             }
         }
-        // if (depth == 3) {
-        //     print("gradeArea", this.gradeArea, (o) => o[4])
-        // }
-        return { ...p, g: maxG, t: "C" };
+        return { ...p, g: maxG };
     }
 }
