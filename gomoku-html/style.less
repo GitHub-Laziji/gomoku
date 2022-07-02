@@ -1,0 +1,75 @@
+.checkerboard {
+    --unit-w  : 30px;
+    --mk-w    : 5px;
+    --line-w  : 1px;
+    --point-w : 20px;
+    background: #E6A23C;
+    width     : calc(var(--unit-w) * 16);
+    height    : calc(var(--unit-w) * 16);
+    position  : relative;
+
+    .checkerboard-ck {
+        position: absolute;
+        cursor  : pointer;
+        width   : calc(var(--unit-w) * 16);
+        height  : calc(var(--unit-w) * 16);
+        left    : 0;
+        top     : 0;
+    }
+
+    .checkerboard-win {
+        position       : absolute;
+        width          : calc(var(--unit-w) * 16);
+        height         : calc(var(--unit-w) * 16);
+        left           : 0;
+        top            : 0;
+        display        : flex;
+        align-items    : center;
+        justify-content: center;
+        font-size      : 28px;
+        font-weight    : 600;
+        color          : #fff;
+    }
+
+    .h-line {
+        position  : absolute;
+        height    : var(--line-w);
+        background: #000;
+        width     : calc(var(--unit-w) * 14);
+        left      : var(--unit-w);
+    }
+
+    .v-line {
+        position  : absolute;
+        width     : var(--line-w);
+        background: #000;
+        height    : calc(var(--unit-w) * 14);
+        top       : var(--unit-w);
+    }
+
+    .mk {
+        position     : absolute;
+        height       : var(--mk-w);
+        width        : var(--mk-w);
+        background   : #000;
+        border-radius: 50%;
+    }
+
+    .point {
+        position     : absolute;
+        height       : var(--point-w);
+        width        : var(--point-w);
+        border-radius: 50%;
+        display      : none;
+
+        &[color='1'] {
+            display   : block;
+            background: #000;
+        }
+
+        &[color='0'] {
+            display   : block;
+            background: #fff;
+        }
+    }
+}

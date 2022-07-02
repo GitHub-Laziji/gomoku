@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.less" />
+</head>
+
+<body>
+    <div>
+        <div style="display:flex">
+            <div class="checkerboard">
+                <div class="checkerboard-ck" onclick="onCbClick(event)"></div>
+                <div class="checkerboard-win">
+                    点击右方按钮开始
+                </div>
+            </div>
+            <div style="width:140px;padding: 30px;">
+                <button style="width:100%;font-size: 16px;" onclick="onStart(1)">棋手先开始</button>
+                <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="onStart(0)">电脑先开始</button>
+                <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugStart()">debugStart</button>
+                <button style="width:100%;font-size: 16px;margin-top: 15px;" onclick="debugSave()">保存</button>
+            </div>
+        </div>
+    </div>
+    <script src="./calc.js"></script>
+    <script>
+
+        const unitW = 30;
+        const mkW = 5;
+        const pointW = 20;
+        let current = 1;
+        let step = 0;
+        let prePoint = { x: null, y: null };
+        let chess = null;
+        (function () {
+            let html = "";
+            for (let i = 0; i < 15; i++) {
+                html += `<div class="h-line" style="top:${i * unitW + unitW}px;"></div>\n`;
+            }
+            for (let i = 0; i < 15; i++) {
+                html += `<div class="v-line" style="left:${i * unitW + unitW}px;"></div>\n`;
+            }
+            for (let p of [[3, 3], [11, 3], [7, 7], [3, 11], [11, 11]]) {
+                html += `<div class="mk" style="top:${(p[0] + 1) * unitW - 2}px;left:${(p[1] + 1) * unitW - 2}px;"></div>`
+            }
+            for (let y = 0; y < 15; y++) {
+                for (let x = 0; x < 15; x++) {
+                    html += `<div class="point" color="-1" x="${x}" y="${y}" style="top:${y * unitW + unitW - pointW / 2}px;left:${x * unitW + unitW - pointW / 2}px;"></div>`
+                }
+            }
+            document.querySelector(".checkerboard").innerHTML = html + document.querySelector(".checkerboard").innerHTML;
+        })();
+
+        function debugSave() {
+            let p = chess.getPoints();
+            p[prePoint.y][prePoint.x] = -1;
+            console.log(prePoint, p)
+            localStorage.setItem("TEMP", JSON.stringify(p));
+        }
+
+        function debugStart() {
+            let p = JSON.parse(localStorage.getItem("TEMP"));
+            console.log(p)
+            current = 1;
+            start = true;
+            chess = new Chess(p, 1);
+            document.querySelectorAll(".point").forEach(o => {
+                o.setAttribute("color", p[o.getAttribute("y")][o.getAttribute("x")])
+            });
+            document.querySelector(".checkerboard-win").setAttribute("style", "display:none");
+            // console.log(t)
+            setTimeout(() => {
+                let { x, y } = chess.calc(current, 3)
+                putPoint(x, y);
+            }, 0)
+
+        }
+
+        function putPoint(x, y) {
+            if (!chess.putPoint(x, y, current, true)) {
+                return false;
+            }
+            document.querySelector(`.point[x='${x}'][y='${y}']`).setAttribute("color", current);
+            // console.log(document.querySelector(`.point[x='${x}'][y='${y}']`))
+            prePoint = { x, y };
+            current = 1 - current;
+            step++;
+            if (step == 15 * 15) {
+                document.querySelector(".checkerboard-win").setAttribute("style", "display:flex");
+                document.querySelector(".checkerboard-win").innerHTML = "平局";
+                start = false;
+                return false;
+            }
+            if (chess.isWin(x, y)) {
+                // console.log(document.querySelector(".checkerboard-win"))
+                document.querySelector(".checkerboard-win").setAttribute("style", "display:flex");
+                document.querySelector(".checkerboard-win").innerHTML = current == 1 ? "白棋胜" : "黑棋胜";
+                start = false;
+                return false;
+            }
+            return true;
+        }
+
+        function onStart(t) {
+            current = 1;
+            start = true;
+            chess = new Chess(create2DArr(15, 15, -1), 1);
+            document.querySelectorAll(".point").forEach(o => o.setAttribute("color", "-1"));
+            document.querySelector(".checkerboard-win").setAttribute("style", "display:none");
+            // console.log(t)
+            if (t == 0) {
+                // console.log(chess.calc(current, 3))
+                let { x, y } = chess.calc(current, 3)
+                putPoint(x, y);
+            }
+        }
+        function onCbClick(e) {
+            // console.log(e)
+            if (!start) {
+                return;
+            }
+            let x = Math.floor((e.layerX - unitW / 2) / unitW);
+            let y = Math.floor((e.layerY - unitW / 2) / unitW);
+            if (putPoint(x, y)) {
+                setTimeout(() => {
+                    let { x, y } = chess.calc(current, 3)
+                    putPoint(x, y);
+                }, 0)
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
