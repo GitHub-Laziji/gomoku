@@ -5,5 +5,3 @@
 单机对战五子棋
 
 [https://github-laziji.github.io/gomoku/]
-
----
