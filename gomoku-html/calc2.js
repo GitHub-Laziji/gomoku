@@ -34,7 +34,7 @@ const SHAPE = {
     "__ooo": [P10(6), P10(5)],
 
     //活2
-    "___oo___": [P10(5.5), P(4.5)],
+    "___oo___": [P10(5.5), P10(4.5)],
 
     //半活2
     "__oo___": [P10(5), P10(4)],
@@ -65,6 +65,16 @@ const SHAPE = {
 
 let board = [];
 
+const initBoard = (w) => {
+    board = [];
+    for (let i = 0; i < w; i++) {
+        let row = [];
+        for (let j = 0; j < w; j++) {
+            row[j] = 0;
+        }
+        board[i] = row;
+    }
+}
 
 const getShapes = (board, color) => {
     let w = board[0].length, h = board.length;
@@ -126,7 +136,7 @@ const getShapes = (board, color) => {
         }
     }
 
-    return [shapes0, shapes0];
+    return [shapes0, shapes1];
 }
 
 const forEach2d = (arr2d, func) => {

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .checkerboard {
+            --unit-w: 30px;
+            --mk-w: 5px;
+            --line-w: 1px;
+            --point-w: 20px;
+            width: calc(var(--unit-w) * 16);
+            height: calc(var(--unit-w) * 16);
+            background: #e6a23c;
+            position: relative;
+        }
+
+        .checkerboard .checkerboard-ck {
+            cursor: pointer;
+            width: calc(var(--unit-w) * 16);
+            height: calc(var(--unit-w) * 16);
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .checkerboard .checkerboard-win {
+            width: calc(var(--unit-w) * 16);
+            height: calc(var(--unit-w) * 16);
+            color: #fff;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .checkerboard .h-line {
+            height: var(--line-w);
+            width: calc(var(--unit-w) * 14);
+            left: var(--unit-w);
+            background: #000;
+            position: absolute;
+        }
+
+        .checkerboard .v-line {
+            width: var(--line-w);
+            height: calc(var(--unit-w) * 14);
+            top: var(--unit-w);
+            background: #000;
+            position: absolute;
+        }
+
+        .checkerboard .mk {
+            height: var(--mk-w);
+            width: var(--mk-w);
+            background: #000;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .checkerboard .p-mk {
+            height: var(--mk-w);
+            width: var(--mk-w);
+            background: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .checkerboard .point {
+            height: var(--point-w);
+            width: var(--point-w);
+            border-radius: 50%;
+            display: none;
+            position: absolute;
+        }
+
+        .checkerboard .point[color="1"] {
+            background: #000;
+            display: block;
+        }
+
+        .checkerboard .point[color="-1"] {
+            background: #fff;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+
+        <div style="display:flex">
+            <div class="checkerboard">
+                <div v-for="item,y of board" class="h-line" :style="'top:'+(y * 30 + 30)+'px;'"></div>
+                <div v-for="item,y of board" class="v-line" :style="'left:'+(y * 30 + 30)+'px;'"></div>
+                <div class="checkerboard-ck" style="padding: 15px;">
+                    <div v-for="row,y of board" style="display: flex;">
+                        <div v-for="col,x of row"
+                            style="width: 30px;height: 30px;display: flex;align-items: center;justify-content: center;"
+                            @click="put(x,y)">
+                            <div class="point" :color="col"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.global.min.js"></script>
+    <script src="./calc2.js"></script>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    w: 15,
+                    board: []
+                }
+            },
+            mounted() {
+                this.initBoard(this.w);
+                let { x, y } = calcDepth(this.board, 1, 1);
+                this.board[y][x] = 1;
+            },
+            methods: {
+                initBoard(w) {
+                    this.board = [];
+                    for (let i = 0; i < w; i++) {
+                        let row = [];
+                        for (let j = 0; j < w; j++) {
+                            row[j] = 0;
+                        }
+                        this.board[i] = row;
+                    }
+                },
+                put(x, y) {
+                    if (this.board[y][x] != 0) {
+                        return;
+                    }
+                    this.board[y][x] = -1;
+                    let { ox, oy } = calcDepth(this.board, 1, 1);
+                    this.board[oy][ox] = 1;
+                }
+            }
+        });
+
+        app.mount("#app");
+
+
+    </script>
+
+</body>
+
+</html>
