@@ -112,7 +112,7 @@ const getShapes = (board, color) => {
             if (ch == - color) {
                 shape0 += "x";
                 shape1 += "o";
-            } else if (board[yy][xx] == color) {
+            } else if (ch == color) {
                 shape0 += "o";
                 shape1 += "x";
             } else {
@@ -124,13 +124,13 @@ const getShapes = (board, color) => {
         shape1 = "x" + shape1 + "x";
         for (let s in SHAPE) {
             if (shape0.indexOf(s) != -1) {
-                shape0.push(s);
+                shapes0.push(s);
                 break;
             }
         }
         for (let s in SHAPE) {
             if (shape1.indexOf(s) != -1) {
-                shape1.push(s);
+                shapes1.push(s);
                 break;
             }
         }
